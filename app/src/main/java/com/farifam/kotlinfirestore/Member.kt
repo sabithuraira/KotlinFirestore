@@ -6,5 +6,6 @@ package com.farifam.kotlinfirestore
 
 
 class Member(
-        var first_name: String, var last_name: String, var born: String
+        var first_name: String,
+        var last_name: String, var born: String
 )

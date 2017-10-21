@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">KotlinFirestore</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_form">Form</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_fname">First Name</string>
+    <string name="prompt_lname">Last Name</string>
+    <string name="prompt_born">Born City</string>
+    <string name="action_submit">Submit</string>
 </resources>

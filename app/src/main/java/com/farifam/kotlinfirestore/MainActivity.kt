@@ -1,5 +1,6 @@
 package com.farifam.kotlinfirestore
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
@@ -16,25 +17,27 @@ import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private val firestoreData by lazy { FirestoreData() }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         FirebaseApp.initializeApp(this);
-        var db = FirebaseFirestore.getInstance()
+
+//        firestoreData.loadDatas()
 
 //        val toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
 
-//        val fab = findViewById(R.id.fab) as FloatingActionButton
-//        fab.setOnClickListener { view ->
-//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null).show()
-//        }
+        fab.setOnClickListener { view ->
+            val intent = Intent(this, FormActivity::class.java)
+            startActivity(intent)
+        }
 
-        var list_member= mutableListOf<Member>()
-        list_member.add(Member("Sabit", "Huraira", "Palembang"))
-        list_member.add(Member("Fithri", "Selva", "Kingstone City"))
-        list_member.add(Member("Zea", "Shakira", "Palembang"))
+        var list_member= firestoreData.loadDatas() //mutableListOf<Member>()
+//        list_member.add(Member("Sabit", "Huraira", "Palembang"))
+//        list_member.add(Member("Fithri", "Selva", "Kingstone City"))
+//        list_member.add(Member("Zea", "Shakira", "Palembang"))
 
 
         var dataAdapter = DataAdapter(ArrayList(list_member), applicationContext)
