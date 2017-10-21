@@ -12,6 +12,7 @@ import android.view.MenuItem
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.FirebaseApp
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +30,16 @@ class MainActivity : AppCompatActivity() {
 //            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                    .setAction("Action", null).show()
 //        }
+
+        var list_member= mutableListOf<Member>()
+        list_member.add(Member("Sabit", "Huraira", "Palembang"))
+        list_member.add(Member("Fithri", "Selva", "Kingstone City"))
+        list_member.add(Member("Zea", "Shakira", "Palembang"))
+
+
+        var dataAdapter = DataAdapter(ArrayList(list_member), applicationContext)
+        listview.setAdapter(dataAdapter)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

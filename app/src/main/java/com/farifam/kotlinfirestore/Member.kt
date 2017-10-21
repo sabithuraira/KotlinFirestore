@@ -6,6 +6,5 @@ package com.farifam.kotlinfirestore
 
 
 class Member(
-        var longitude: Double, var latitude: Double, var city: String,
-        var province: String, var name: String, var description: String
+        var first_name: String, var last_name: String, var born: String
 )
