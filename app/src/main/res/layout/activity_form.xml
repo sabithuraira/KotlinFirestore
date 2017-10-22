@@ -10,14 +10,23 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.farifam.kotlinfirestore.FormActivity">
 
-    <!-- Login progress -->
     <ProgressBar
-        android:id="@+id/login_progress"
+        android:id="@+id/progress"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:visibility="gone" />
+
+
+    <TextView
+        android:id="@+id/err_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Error message"
+        android:textColor="@color/error"
+        android:textSize="14sp"
+        android:visibility="gone"  />
 
     <ScrollView
         android:id="@+id/login_form"

@@ -7,4 +7,6 @@
     <color name="lightgrey">#dcdcdc</color>
     <color name="lightergrey">#e6e6e6</color>
     <color name="lightestgrey">#eeeeee</color>
+
+    <color name="error">#FF0000</color>
 </resources>
