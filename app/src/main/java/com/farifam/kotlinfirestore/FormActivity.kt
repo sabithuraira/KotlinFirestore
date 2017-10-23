@@ -23,15 +23,19 @@ import kotlinx.android.synthetic.main.activity_form.*
 import java.util.HashMap
 import android.content.Intent
 
-
-
-
 class FormActivity : AppCompatActivity() {
     private val db by lazy { FirebaseFirestore.getInstance() }
+    var id: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_form)
+
+        id = intent.getStringExtra("id")
+
+        if(id.length!=0){
+            initializeUpdate()
+        }
 
         submit_button.setOnClickListener {
             err_msg.visibility = View.GONE
@@ -42,19 +46,39 @@ class FormActivity : AppCompatActivity() {
             data.put("last", lname.text.toString())
             data.put("born", born.text.toString())
 
-            db.collection("members")
-                .add(data)
-                .addOnSuccessListener {
-                    val intent = Intent()
-                    setResult(Activity.RESULT_OK, intent)
-                    this.finish()
-                }
-                .addOnFailureListener {
-                    err_msg.text = "Failed updated data"
-                    err_msg.visibility = View.VISIBLE;
-                }
+            if(id.length==0){
+                db.collection("members")
+                        .add(data)
+                        .addOnSuccessListener {
+                            val intent = Intent()
+                            setResult(Activity.RESULT_OK, intent)
+                            this.finish()
+                        }
+                        .addOnFailureListener {
+                            err_msg.text = "Failed updated data"
+                            err_msg.visibility = View.VISIBLE;
+                        }
+            }
+            else{
+                db.collection("members").document(id)
+                        .update(data)
+                        .addOnSuccessListener{
+                            val intent = Intent()
+                            setResult(Activity.RESULT_OK, intent)
+                            this.finish()
+                        }
+                        .addOnFailureListener{
+                            err_msg.text = "Failed updated data"
+                            err_msg.visibility = View.VISIBLE;
+                        }
+            }
         }
+    }
 
+    fun initializeUpdate(){
+        fname.setText(intent.getStringExtra("first_name"))
+        lname.setText(intent.getStringExtra("last_name"))
+        born.setText(intent.getStringExtra("born"))
     }
 }
 

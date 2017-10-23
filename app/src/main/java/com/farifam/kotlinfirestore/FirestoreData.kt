@@ -43,7 +43,7 @@ class FirestoreData {
                     if (task.isSuccessful) {
                         for (document in task.result) {
 //                            Log.d(TAG, "dapet" + document.id + " => " + document.data)
-                            list_member.add(Member(document.get("first").toString(), document.get("last").toString(), document.get("born").toString()))
+                            list_member.add(Member(document.id,document.get("first").toString(), document.get("last").toString(), document.get("born").toString()))
                         }
                     } else {
                         Log.w(TAG, "Error getting documents.", task.exception)

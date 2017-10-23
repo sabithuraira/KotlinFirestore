@@ -11,7 +11,6 @@ import android.widget.TextView
 //import org.w3c.dom.Text
 import java.util.*
 
-
 class DataAdapter(private val dataSet: ArrayList<Member>, internal var mContext: Context) : ArrayAdapter<Member>(mContext, R.layout.row_data, dataSet) {
     private class ViewHolder {
         internal var txt_name: TextView? = null
