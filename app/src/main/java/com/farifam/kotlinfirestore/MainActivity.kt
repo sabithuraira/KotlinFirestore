@@ -13,6 +13,7 @@ import android.view.MenuItem
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import org.jetbrains.anko.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,13 +37,32 @@ class MainActivity : AppCompatActivity() {
         loadFirestoreDatas()
 
         listview.setOnItemClickListener { parent, view, position, id ->
-            val intent = Intent(this, FormActivity::class.java)
-            intent.putExtra("id", list_member[position].id)
-            intent.putExtra("first_name", list_member[position].first_name)
-            intent.putExtra("last_name", list_member[position].last_name)
-            intent.putExtra("born", list_member[position].born)
-            startActivityForResult(intent, FORM_ACTIVITY_CODE);
+            val actions = listOf("Update", "Delete")
+            selector(null, actions, { dialogInterface, i ->
+                if(i==0) updateData(position)
+                else deleteData(position)
+            })
         }
+    }
+
+    fun deleteData(position: Int){
+        db.collection("members").document(list_member[position].id)
+                .delete()
+                .addOnSuccessListener{
+                    loadFirestoreDatas()
+                }
+                .addOnFailureListener{
+                    toast("Failed to delete data, please check your connection")
+                }
+    }
+
+    fun updateData(position: Int){
+        val intent = Intent(this, FormActivity::class.java)
+        intent.putExtra("id", list_member[position].id)
+        intent.putExtra("first_name", list_member[position].first_name)
+        intent.putExtra("last_name", list_member[position].last_name)
+        intent.putExtra("born", list_member[position].born)
+        startActivityForResult(intent, FORM_ACTIVITY_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
