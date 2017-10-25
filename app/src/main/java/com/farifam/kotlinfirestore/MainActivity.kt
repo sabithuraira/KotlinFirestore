@@ -36,8 +36,8 @@ class MainActivity : AppCompatActivity() {
 
         loadFirestoreDatas()
 
+        val actions = listOf("Update", "Delete")
         listview.setOnItemClickListener { parent, view, position, id ->
-            val actions = listOf("Update", "Delete")
             selector(null, actions, { dialogInterface, i ->
                 if(i==0) updateData(position)
                 else deleteData(position)
@@ -59,8 +59,8 @@ class MainActivity : AppCompatActivity() {
     fun updateData(position: Int){
         val intent = Intent(this, FormActivity::class.java)
         intent.putExtra("id", list_member[position].id)
-        intent.putExtra("first_name", list_member[position].first_name)
-        intent.putExtra("last_name", list_member[position].last_name)
+        intent.putExtra("first_name", list_member[position].first)
+        intent.putExtra("last_name", list_member[position].last)
         intent.putExtra("born", list_member[position].born)
         startActivityForResult(intent, FORM_ACTIVITY_CODE)
     }
@@ -83,8 +83,8 @@ class MainActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     list_member.clear()
                     for (document in task.result) {
-                        Log.d(ContentValues.TAG, "dapet" + document.id + " => " + document.data)
-                        list_member.add(Member(document.id,document.get("first").toString(), document.get("last").toString(), document.get("born").toString()))
+//                        list_member.add(Member(document.id,document.get("first").toString(), document.get("last").toString(), document.get("born").toString()))
+                        list_member.add(document.toObject(Member::class.java))
                     }
 
                     dataAdapter = DataAdapter(ArrayList(list_member), applicationContext)

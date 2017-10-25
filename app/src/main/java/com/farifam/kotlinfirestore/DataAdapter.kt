@@ -40,7 +40,7 @@ class DataAdapter(private val dataSet: ArrayList<Member>, internal var mContext:
         }
 
 
-        viewHolder.txt_name!!.setText(dataModel!!.first_name + " " + dataModel!!.last_name)
+        viewHolder.txt_name!!.setText(dataModel!!.first + " " + dataModel!!.last)
         viewHolder.txt_born!!.setText(dataModel!!.born)
 
 

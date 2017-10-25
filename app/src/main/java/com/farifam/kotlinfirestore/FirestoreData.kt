@@ -23,8 +23,8 @@ class FirestoreData {
 
     fun saveData(member: Member) {
         val data = HashMap<String, Any>()
-        data.put("first", member.first_name)
-        data.put("last", member.last_name)
+        data.put("first", member.first)
+        data.put("last", member.last)
         data.put("born", member.born)
 
         db.collection("members")
