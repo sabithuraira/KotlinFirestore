@@ -6,14 +6,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.view.Menu
 import android.view.MenuItem
+import android.view.inputmethod.EditorInfo
 
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.*
+import com.google.firebase.firestore.CollectionReference
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,6 +47,15 @@ class MainActivity : AppCompatActivity() {
                 if(i==0) updateData(position)
                 else deleteData(position)
             })
+        }
+
+
+        search.setOnEditorActionListener() { v, actionId, event ->
+            if(actionId == EditorInfo.IME_ACTION_SEARCH) {
+                loadFirestoreDatas()
+                true
+            }
+            false
         }
     }
 
@@ -77,25 +91,50 @@ class MainActivity : AppCompatActivity() {
 
     fun loadFirestoreDatas(){
         progress.visibility = View.VISIBLE
-        db.collection("members")
-            .get()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    list_member.clear()
-                    for (document in task.result) {
-//                        list_member.add(Member(document.id,document.get("first").toString(), document.get("last").toString(), document.get("born").toString()))
-                        list_member.add(document.toObject(Member::class.java))
+        if(search.text.toString().length>0){
+            val members = db.collection("members")
+            val query = members.whereEqualTo("first", search.text.toString())
+
+            query.get()
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            list_member.clear()
+                            for (document in task.result) {
+                                list_member.add(document.toObject(Member::class.java))
+                            }
+
+                            dataAdapter = DataAdapter(ArrayList(list_member), applicationContext)
+                            listview.setAdapter(dataAdapter)
+
+                            progress.visibility = View.GONE
+                        } else {
+                            Log.w(ContentValues.TAG, "Error getting documents.", task.exception)
+                            progress.visibility = View.GONE
+                        }
                     }
 
-                    dataAdapter = DataAdapter(ArrayList(list_member), applicationContext)
-                    listview.setAdapter(dataAdapter)
+        }
+        else{
+            db.collection("members")
+                    .get()
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            list_member.clear()
+                            for (document in task.result) {
+                                list_member.add(document.toObject(Member::class.java))
+                            }
 
-                    progress.visibility = View.GONE
-                } else {
-                    Log.w(ContentValues.TAG, "Error getting documents.", task.exception)
-                    progress.visibility = View.GONE
-                }
-            }
+                            dataAdapter = DataAdapter(ArrayList(list_member), applicationContext)
+                            listview.setAdapter(dataAdapter)
+
+                            progress.visibility = View.GONE
+                        } else {
+                            Log.w(ContentValues.TAG, "Error getting documents.", task.exception)
+                            progress.visibility = View.GONE
+                        }
+                    }
+
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

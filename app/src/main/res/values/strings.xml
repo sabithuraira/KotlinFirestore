@@ -7,5 +7,6 @@
     <string name="prompt_fname">First Name</string>
     <string name="prompt_lname">Last Name</string>
     <string name="prompt_born">Born City</string>
+    <string name="prompt_search">Search</string>
     <string name="action_submit">Submit</string>
 </resources>
