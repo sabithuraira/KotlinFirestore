@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
+import android.support.annotation.Nullable
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.KeyEvent
@@ -11,16 +12,16 @@ import android.view.View
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
+import com.google.firebase.firestore.*
 
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.*
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.Query
 
 
 class MainActivity : AppCompatActivity() {
+
+    val settings: FirebaseFirestoreSettings = FirebaseFirestoreSettings.Builder().setPersistenceEnabled(true).build();
 
     private val db by lazy { FirebaseFirestore.getInstance() }
     var list_member= mutableListOf<Member>()
@@ -33,6 +34,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         setSupportActionBar(toolbar)
+
+        db.setFirestoreSettings(settings);
 
         fab.setOnClickListener { view ->
             val intent = Intent(this, FormActivity::class.java)
@@ -117,6 +120,31 @@ class MainActivity : AppCompatActivity() {
                         progress.visibility = View.GONE
                     }
                 }
+
+//        query.
+//            addSnapshotListener(object : EventListener<QuerySnapshot> {
+//                override fun onEvent(@Nullable querySnapshot: QuerySnapshot,
+//                            @Nullable e: FirebaseFirestoreException?) {
+//                    if (e != null) {
+////                            Log.w(FragmentActivity.TAG, "Listen error", e)
+//                        return
+//                    }
+//
+//                    for (change in querySnapshot.documentChanges) {
+//                        if (change.type == DocumentChange.Type.ADDED) {
+////                                Log.d(FragmentActivity.TAG, "New city:" + change.document.data)
+//
+//                        }
+//
+//                        val source = if (querySnapshot.metadata.isFromCache)
+//                            "local cache"
+//                        else
+//                            "server"
+////                            Log.d(FragmentActivity.TAG, "Data fetched from " + source)
+//                    }
+//
+//                }
+//            })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

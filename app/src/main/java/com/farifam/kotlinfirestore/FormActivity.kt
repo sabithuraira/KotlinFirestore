@@ -31,7 +31,9 @@ class FormActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_form)
 
-        id = intent.getStringExtra("id")
+        if (intent.hasExtra("id"))
+            id = intent.getStringExtra("id")
+
 
         if(id.length!=0){
             initializeUpdate()
