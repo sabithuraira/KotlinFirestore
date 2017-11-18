@@ -103,11 +103,35 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        query.get()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        list_member.clear()
-                        for (document in task.result) {
+//          YOU CAN USE THIS CODE FOR ONLINE MODE ONLY
+//        query.get()
+//                .addOnCompleteListener { task ->
+//                    if (task.isSuccessful) {
+//                        list_member.clear()
+//                        for (document in task.result) {
+//                            list_member.add(document.toObject(Member::class.java))
+//                        }
+//
+//                        dataAdapter = DataAdapter(ArrayList(list_member), applicationContext)
+//                        listview.setAdapter(dataAdapter)
+//
+//                        progress.visibility = View.GONE
+//                    } else {
+//                        Log.w(ContentValues.TAG, "Error getting documents.", task.exception)
+//                        progress.visibility = View.GONE
+//                    }
+//                }
+
+        query
+                .addSnapshotListener(object : EventListener<QuerySnapshot> {
+                    override fun onEvent(querySnapshot: QuerySnapshot?,
+                                         e: FirebaseFirestoreException?) {
+                        if (e != null) {
+                            Log.w(ContentValues.TAG, "Listen error", e)
+                            return
+                        }
+
+                        for (document in querySnapshot!!) {
                             list_member.add(document.toObject(Member::class.java))
                         }
 
@@ -115,36 +139,21 @@ class MainActivity : AppCompatActivity() {
                         listview.setAdapter(dataAdapter)
 
                         progress.visibility = View.GONE
-                    } else {
-                        Log.w(ContentValues.TAG, "Error getting documents.", task.exception)
-                        progress.visibility = View.GONE
-                    }
-                }
 
-//        query.
-//            addSnapshotListener(object : EventListener<QuerySnapshot> {
-//                override fun onEvent(@Nullable querySnapshot: QuerySnapshot,
-//                            @Nullable e: FirebaseFirestoreException?) {
-//                    if (e != null) {
-////                            Log.w(FragmentActivity.TAG, "Listen error", e)
-//                        return
-//                    }
-//
-//                    for (change in querySnapshot.documentChanges) {
-//                        if (change.type == DocumentChange.Type.ADDED) {
-////                                Log.d(FragmentActivity.TAG, "New city:" + change.document.data)
-//
-//                        }
-//
-//                        val source = if (querySnapshot.metadata.isFromCache)
-//                            "local cache"
-//                        else
-//                            "server"
-////                            Log.d(FragmentActivity.TAG, "Data fetched from " + source)
-//                    }
-//
-//                }
-//            })
+                        for (change in querySnapshot!!.documentChanges) {
+                            if (change.type == DocumentChange.Type.ADDED) {
+                                Log.d(ContentValues.TAG, "data:" + change.document.data)
+                            }
+
+                            val source = if (querySnapshot.metadata.isFromCache)
+                                "local cache"
+                            else
+                                "server"
+                            Log.d(ContentValues.TAG, "Data fetched from " + source)
+                        }
+
+                    }
+                })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
