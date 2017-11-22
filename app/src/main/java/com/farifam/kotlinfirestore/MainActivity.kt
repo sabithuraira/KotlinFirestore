@@ -17,6 +17,14 @@ import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.*
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.android.gms.tasks.Task
+import android.support.annotation.NonNull
+import com.google.android.gms.tasks.OnCompleteListener
+
+import com.farifam.kotlinfirestore.DataAdapter
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -64,13 +72,13 @@ class MainActivity : AppCompatActivity() {
 
     fun deleteData(position: Int){
         db.collection("members").document(list_member[position].id)
-                .delete()
-                .addOnSuccessListener{
-                    loadFirestoreDatas()
-                }
-                .addOnFailureListener{
-                    toast("Failed to delete data, please check your connection")
-                }
+            .delete()
+            .addOnSuccessListener{
+                loadFirestoreDatas()
+            }
+            .addOnFailureListener{
+                toast("Failed to delete data, please check your connection")
+            }
     }
 
     fun updateData(position: Int){
@@ -100,60 +108,74 @@ class MainActivity : AppCompatActivity() {
 
         if(search.text.toString().length>0){
             query = memberCollection.whereEqualTo("first", search.text.toString())
-
         }
 
-//          YOU CAN USE THIS CODE FOR ONLINE MODE ONLY
 //        query.get()
-//                .addOnCompleteListener { task ->
-//                    if (task.isSuccessful) {
-//                        list_member.clear()
-//                        for (document in task.result) {
-//                            list_member.add(document.toObject(Member::class.java))
-//                        }
-//
-//                        dataAdapter = DataAdapter(ArrayList(list_member), applicationContext)
-//                        listview.setAdapter(dataAdapter)
-//
-//                        progress.visibility = View.GONE
-//                    } else {
-//                        Log.w(ContentValues.TAG, "Error getting documents.", task.exception)
-//                        progress.visibility = View.GONE
+//            .addOnCompleteListener { task ->
+//                if (task.isSuccessful) {
+//                    list_member.clear()
+//                    for (document in task.result) {
+//                        var cur_data: Member = document.toObject(Member::class.java)
+//                        cur_data.id = document.id
+//                        list_member.add(cur_data)
 //                    }
+//
+//                    dataAdapter = DataAdapter(ArrayList(list_member), applicationContext)
+//                    listview.setAdapter(dataAdapter)
+//
+//                    progress.visibility = View.GONE
+//                } else {
+//                    Log.d(ContentValues.TAG, "Error getting documents: ", task.exception)
 //                }
+//            }
 
         query
-                .addSnapshotListener(object : EventListener<QuerySnapshot> {
-                    override fun onEvent(querySnapshot: QuerySnapshot?,
-                                         e: FirebaseFirestoreException?) {
-                        if (e != null) {
-                            Log.w(ContentValues.TAG, "Listen error", e)
-                            return
-                        }
-
-                        for (document in querySnapshot!!) {
-                            list_member.add(document.toObject(Member::class.java))
-                        }
-
-                        dataAdapter = DataAdapter(ArrayList(list_member), applicationContext)
-                        listview.setAdapter(dataAdapter)
-
-                        progress.visibility = View.GONE
-
-                        for (change in querySnapshot!!.documentChanges) {
-                            if (change.type == DocumentChange.Type.ADDED) {
-                                Log.d(ContentValues.TAG, "data:" + change.document.data)
-                            }
-
-                            val source = if (querySnapshot.metadata.isFromCache)
-                                "local cache"
-                            else
-                                "server"
-                            Log.d(ContentValues.TAG, "Data fetched from " + source)
-                        }
-
+            .addSnapshotListener(object : EventListener<QuerySnapshot> {
+                override fun onEvent(querySnapshot: QuerySnapshot?,
+                                     e: FirebaseFirestoreException?) {
+                    if (e != null) {
+                        Log.w(ContentValues.TAG, "Listen error", e)
+                        return
                     }
-                })
+
+                    for (change in querySnapshot!!.documentChanges) {
+
+                        when (change.type) {
+                            DocumentChange.Type.ADDED -> onDocumentAdded(change)
+                            DocumentChange.Type.MODIFIED -> onDocumentModified(change)
+                            DocumentChange.Type.REMOVED -> onDocumentRemoved(change)
+                        }
+                    }
+
+                    dataAdapter = DataAdapter(ArrayList(list_member), applicationContext)
+                    listview.setAdapter(dataAdapter)
+
+                    progress.visibility = View.GONE
+                }
+            })
+    }
+
+    fun onDocumentAdded(change: DocumentChange){
+        var cur_data: Member = change.document.toObject(Member::class.java)
+        cur_data.id = change.document.id
+
+        if(!list_member.any { x -> x.id == change.document.id })
+            list_member.add(cur_data)
+    }
+
+    fun onDocumentModified(change: DocumentChange){
+        var cur_data: Member = change.document.toObject(Member::class.java)
+        cur_data.id = change.document.id
+        if (change.getOldIndex() == change.getNewIndex()) {
+            list_member.set(change.getOldIndex(),  cur_data);
+        } else {
+            list_member.removeAt(change.getOldIndex());
+            list_member.add(change.getNewIndex(), cur_data);
+        }
+    }
+
+    fun onDocumentRemoved(change: DocumentChange){
+        list_member.removeAt(change.getOldIndex());
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
