@@ -26,7 +26,6 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.farifam.kotlinfirestore.DataAdapter
 
 
-
 class MainActivity : AppCompatActivity() {
 
     val settings: FirebaseFirestoreSettings = FirebaseFirestoreSettings.Builder().setPersistenceEnabled(true).build();
@@ -71,14 +70,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun deleteData(position: Int){
+        //THIS ONLY WORK FOR ONLINE
+//        db.collection("members").document(list_member[position].id)
+//            .delete()
+//            .addOnSuccessListener{
+//                loadFirestoreDatas()
+//            }
+//            .addOnFailureListener{
+//                toast("Failed to delete data, please check your connection")
+//            }
+
         db.collection("members").document(list_member[position].id)
-            .delete()
-            .addOnSuccessListener{
-                loadFirestoreDatas()
-            }
-            .addOnFailureListener{
-                toast("Failed to delete data, please check your connection")
-            }
+                .addSnapshotListener(object : EventListener<DocumentSnapshot> {
+                    override fun onEvent(snapshot: DocumentSnapshot?,
+                                         e: FirebaseFirestoreException?) {
+                        if (e != null) {
+                            Log.w(ContentValues.TAG, "Listen error", e)
+                            return
+                        }
+                        snapshot?.reference?.delete()
+                        loadFirestoreDatas()
+                    }
+                })
     }
 
     fun updateData(position: Int){

@@ -62,44 +62,36 @@ class FormActivity : AppCompatActivity() {
 
         if(id.length==0){
 
-//                 THIS ONLY WORK FOR ONLINE MODE
-            db.collection("members")
-                    .add(data)
-                    .addOnSuccessListener {
+//          THIS ONLY WORK FOR ONLINE MODE
+//            db.collection("members")
+//                .add(data)
+//                .addOnSuccessListener {
+//                    val intent = Intent()
+//                    setResult(Activity.RESULT_OK, intent)
+//                    this@FormActivity.finish()
+//                }
+//                .addOnFailureListener {
+//                    err_msg.text = "Failed updated data"
+//                    err_msg.visibility = View.VISIBLE;
+//                }
+
+            db.collection("members").document()
+                .addSnapshotListener(object : EventListener<DocumentSnapshot> {
+                    override fun onEvent(snapshot: DocumentSnapshot?,
+                                         e: FirebaseFirestoreException?) {
+                        if (e != null) {
+                            Log.w(ContentValues.TAG, "Listen error", e)
+                            err_msg.text = e.message
+                            err_msg.visibility = View.VISIBLE;
+                            return
+                        }
+                        snapshot?.reference?.set(data)
+
                         val intent = Intent()
                         setResult(Activity.RESULT_OK, intent)
                         this@FormActivity.finish()
                     }
-                    .addOnFailureListener {
-                        err_msg.text = "Failed updated data"
-                        err_msg.visibility = View.VISIBLE;
-                    }
-
-//                db.collection("members")
-//                        .addSnapshotListener(object : EventListener<QuerySnapshot> {
-//                            override fun onEvent(querySnapshot: QuerySnapshot?,
-//                                                 e: FirebaseFirestoreException?) {
-//                                if (e != null) {
-//                                    Log.w(ContentValues.TAG, "Listen error", e)
-//                                    return
-//                                }
-//
-//                                querySnapshot?.
-//
-//
-//                                docSnapshot?.reference?.update(data)
-//                                        ?.addOnSuccessListener {
-//                                            val intent = Intent()
-//                                            setResult(Activity.RESULT_OK, intent)
-//                                            this@FormActivity.finish()
-//                                        }
-//                                        ?.addOnFailureListener{
-//                                            err_msg.text = "Failed updated data"
-//                                            err_msg.visibility = View.VISIBLE;
-//                                        }
-//
-//                            }
-//                        })
+                })
         }
         else{
             // THIS ONLY WORK FOR ONLINE MODE
@@ -126,27 +118,11 @@ class FormActivity : AppCompatActivity() {
                             err_msg.visibility = View.VISIBLE;
                             return
                         }
-
-//                        if (snapshot != null && snapshot.exists()) {
                         snapshot?.reference?.update(data)
 
-                                        val intent = Intent()
-                                        setResult(Activity.RESULT_OK, intent)
-                                        this@FormActivity.finish()
-
-//                                    ?.addOnSuccessListener {
-//                                        val intent = Intent()
-//                                        setResult(Activity.RESULT_OK, intent)
-//                                        this@FormActivity.finish()
-//                                    }
-//                                    ?.addOnFailureListener{
-//                                        err_msg.text = "Failed updated data"
-//                                        err_msg.visibility = View.VISIBLE;
-//                                    }
-//                        } else {
-//                            err_msg.text = "Failed updated data"
-//                            err_msg.visibility = View.VISIBLE;
-//                        }
+                        val intent = Intent()
+                        setResult(Activity.RESULT_OK, intent)
+                        this@FormActivity.finish()
                     }
                 })
         }
